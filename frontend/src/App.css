@@ -1,0 +1,235 @@
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+}
+
+.auth-card {
+  width: min(100%, 520px);
+  padding: 28px 24px 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(186, 255, 41, 0.2);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(186, 255, 41, 0.08), transparent 36%),
+    radial-gradient(circle at 100% 100%, rgba(94, 234, 212, 0.1), transparent 45%),
+    #121a17;
+}
+
+.auth-header {
+  margin-bottom: 18px;
+}
+
+.auth-wordmark {
+  font-size: 2rem;
+  letter-spacing: 0.01em;
+}
+
+/* Signature element: a hand-drawn-feeling underline beneath the wordmark,
+   standing in for a generic icon+logotype lockup. */
+.auth-scribble {
+  display: block;
+  width: 92px;
+  height: 10px;
+  margin-top: 2px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 92 10'%3E%3Cpath d='M2 7 C 18 1, 30 9, 46 4 C 62 -1, 74 9, 90 3' fill='none' stroke='%23baff29' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.dashboard-shell {
+  min-height: 100vh;
+  padding: 20px 16px 32px;
+}
+
+.topbar {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 18px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(10px);
+  background: rgba(18, 26, 23, 0.7) !important;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-inline: 12px !important;
+}
+
+.greeting-text {
+  font-size: 1.05rem;
+}
+
+.dashboard-panel {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(18, 26, 23, 0.5);
+}
+
+.empty-state {
+  width: 100%;
+  border-style: dashed !important;
+  border-color: rgba(186, 255, 41, 0.25) !important;
+  border-radius: 14px !important;
+  padding: 32px 18px;
+  text-align: center;
+}
+
+.note-card {
+  width: 100%;
+  min-height: 172px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px !important;
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+  background: linear-gradient(145deg, rgba(26, 36, 32, 0.92), rgba(18, 26, 23, 0.95));
+}
+
+.note-card:hover,
+.note-card:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(186, 255, 41, 0.45);
+}
+
+.note-card:focus-visible {
+  outline: 2px solid #baff29;
+  outline-offset: 2px;
+}
+
+/* Signature element: a colored "spine" per note, deterministically derived
+   from the title, so the dashboard reads like a shelf of book spines. */
+.note-spine {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background-color: var(--spine-color, #baff29);
+}
+
+.note-spine-dialog {
+  position: static;
+  display: inline-block;
+  width: 4px;
+  height: 1.4em;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.note-title-text {
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.note-preview {
+  margin-top: 10px !important;
+  color: #9fb3a8;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  .dashboard-shell {
+    padding: 14px 10px 20px;
+  }
+
+  .auth-card,
+  .dashboard-panel {
+    padding: 14px;
+  }
+}
+
+.dashboard-panel {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(18, 26, 23, 0.5);
+
+  >div:not(:first-child, :last-child) {
+    margin-block: 1rem;
+  }
+}
+
+.info-wrapper {
+  align-items: center;
+}
+
+.card-title-wrapper {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.editor-color-band {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.tag-filter-container {
+  margin-bottom: 0.8rem;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.note-tags-scroll-box {
+  max-height: 108px;
+  overflow-y: auto;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  padding: 0.55rem;
+}
+
+.markdown-preview {
+  background: rgba(8, 13, 11, 0.45);
+}
+
+.markdown-body {
+  color: #e6f1ec;
+  line-height: 1.6;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.markdown-body > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  font-family: 'Fraunces', Georgia, serif;
+  line-height: 1.25;
+}
+
+.markdown-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  background: rgba(186, 255, 41, 0.12);
+  border-radius: 6px;
+  padding: 0.1rem 0.35rem;
+}
+
+.markdown-body pre {
+  background: rgba(8, 13, 11, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 10px;
+  padding: 0.75rem;
+  overflow: auto;
+}
+
+.markdown-body pre code {
+  background: transparent;
+  padding: 0;
+}

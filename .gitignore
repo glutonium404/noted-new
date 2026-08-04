@@ -1,0 +1,29 @@
+# ── Frontend (Vite/Node) ──────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# ── Backend (Maven/Java) ──────────────────────────────────────────────
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+!backend/.mvn/wrapper/maven-wrapper.jar
+
+# This project's SQLite database file — don't commit real accounts,
+# passwords, or notes. The app creates it automatically on first run if
+# it's missing (see backend/src/main/resources/application.properties).
+backend/db/*.db
+backend/db/*.db-shm
+backend/db/*.db-wal
+
+# ── IDEs / OS ────────────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
