@@ -197,7 +197,15 @@ function NoteViewDialog({ note, onClose, onEdit, onDelete }) {
               </Typography>
             )}
           </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <DialogActions sx={{
+            px: 3,
+            pb: 2,
+            flexWrap: "wrap",
+            gap: 1,
+            '& > :not(style) ~ :not(style)': {
+              ml: 0,
+            }
+          }}>
             <Button
               variant="outlined"
               startIcon={<EditRounded />}
@@ -286,7 +294,16 @@ function NoteViewDialog({ note, onClose, onEdit, onDelete }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsAskOpen(false)} disabled={askLoading}>Close</Button>
-          <Button type="submit" disabled={askLoading} variant="contained">
+          <Button
+            type="submit"
+            disabled={askLoading}
+            variant="contained"
+            onClick={() => {
+              if (!askLoading) {
+                handleAsk()
+              }
+            }}
+          >
             {askLoading ? <CircularProgress size={18} color="inherit" /> : 'Ask'}
           </Button>
         </DialogActions>
