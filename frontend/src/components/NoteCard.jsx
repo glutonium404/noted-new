@@ -1,16 +1,18 @@
 import { Card, CardContent, Chip, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import EditRounded from '@mui/icons-material/EditRounded'
+import PushPinRounded from '@mui/icons-material/PushPinRounded'
+import PushPinOutlined from '@mui/icons-material/PushPinOutlined'
 import { formatDate, getNoteActivityDate, resolveNoteColor } from '../lib/noted'
 
-function NoteCard({ note, onOpen, onEdit, onDelete }) {
+function NoteCard({ note, onOpen, onEdit, onDelete, onTogglePin }) {
   const visibleTags = (note.tags ?? []).slice(0, 5)
   const remainingTagCount = Math.max((note.tags ?? []).length - visibleTags.length, 0)
 
   return (
     <Card
       variant="outlined"
-      className="note-card"
+      className={`note-card${note.pinned ? ' note-card-pinned' : ''}`}
       onClick={() => onOpen(note)}
       style={{ '--spine-color': resolveNoteColor(note) }}
     >
@@ -27,6 +29,23 @@ function NoteCard({ note, onOpen, onEdit, onDelete }) {
           </Typography>
 
           <Stack direction="row" spacing={0.5} sx={{ flexShrink: 0, ml: 'auto' }}>
+            <Tooltip title={note.pinned ? 'Unpin' : 'Pin'}>
+              <IconButton
+                size="small"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onTogglePin(note)
+                }}
+                aria-label={note.pinned ? `Unpin ${note.title}` : `Pin ${note.title}`}
+                sx={note.pinned ? { color: 'primary.main' } : undefined}
+              >
+                {note.pinned ? (
+                  <PushPinRounded sx={{ fontSize: '1.3rem' }} />
+                ) : (
+                  <PushPinOutlined sx={{ fontSize: '1.3rem' }} />
+                )}
+              </IconButton>
+            </Tooltip>
             <Tooltip title="Edit">
               <IconButton
                 size="small"

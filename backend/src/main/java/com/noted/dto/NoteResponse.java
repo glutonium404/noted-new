@@ -14,11 +14,12 @@ public class NoteResponse {
     private String updatedAt;
     private List<String> tags;
     private String color;
+    private boolean pinned;
 
     public NoteResponse() {
     }
 
-    public NoteResponse(String id, String title, String body, String createdAt, String updatedAt, List<String> tags, String color) {
+    public NoteResponse(String id, String title, String body, String createdAt, String updatedAt, List<String> tags, String color, boolean pinned) {
         this.id = id;
         this.title = title;
         this.body = body;
@@ -26,6 +27,7 @@ public class NoteResponse {
         this.updatedAt = updatedAt;
         this.tags = tags;
         this.color = color;
+        this.pinned = pinned;
     }
 
     public static NoteResponse from(Note note) {
@@ -40,7 +42,8 @@ public class NoteResponse {
             note.getCreatedAt(),
             note.getUpdatedAt(),
             safeTags,
-            note.getColor());
+            note.getColor(),
+            note.isPinned());
     }
 
     public String getId() {
@@ -97,5 +100,13 @@ public class NoteResponse {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
     }
 }

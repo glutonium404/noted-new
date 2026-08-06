@@ -16,6 +16,7 @@ import {
   apiCreateNote,
   apiUpdateNote,
   apiDeleteNote,
+  apiSetNotePinned,
 } from './lib/noted'
 import './App.css'
 
@@ -155,6 +156,24 @@ function App() {
     setNoteToDelete(note)
   }
 
+  const handleTogglePin = async (note) => {
+    const nextPinned = !note.pinned
+    // Optimistic update so the reorder feels instant; rolled back on failure.
+    setNotes((prev) =>
+      prev.map((n) => (n.id === note.id ? { ...n, pinned: nextPinned } : n)),
+    )
+    setSelectedNote((prev) => (prev && prev.id === note.id ? { ...prev, pinned: nextPinned } : prev))
+    try {
+      const updated = await apiSetNotePinned(note.id, nextPinned)
+      setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)))
+      setSelectedNote((prev) => (prev && prev.id === updated.id ? updated : prev))
+    } catch (err) {
+      setNotes((prev) => prev.map((n) => (n.id === note.id ? note : n)))
+      setSelectedNote((prev) => (prev && prev.id === note.id ? note : prev))
+      notify(err.message ?? 'Unable to update pin right now.', 'error')
+    }
+  }
+
   const confirmDeleteNote = async () => {
     if (!noteToDelete) return
     try {
@@ -182,6 +201,7 @@ function App() {
             onOpenNote={setSelectedNote}
             onEditNote={openEditDialog}
             onDeleteNote={requestDeleteNote}
+            onTogglePin={handleTogglePin}
           />
 
           {isEditorOpen && (
@@ -200,6 +220,7 @@ function App() {
             onClose={() => setSelectedNote(null)}
             onEdit={openEditDialog}
             onDelete={requestDeleteNote}
+            onTogglePin={handleTogglePin}
           />
 
           <ConfirmDeleteDialog

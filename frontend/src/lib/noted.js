@@ -55,8 +55,8 @@ export const resolveNoteColor = (note) => {
 // It resets on every page refresh — refreshing logs you out, on purpose,
 // since there's no persisted session.
 
-const API_BASE = 'https://noted-new.onrender.com/api'
-// const API_BASE = 'http://localhost:8080/api'
+// const API_BASE = 'https://noted-new.onrender.com/api'
+const API_BASE = 'http://localhost:8080/api'
 let _userEmail = null
 
 export const setApiUser = (email) => {
@@ -141,6 +141,14 @@ export const apiUpdateNote = async (id, { title, body, tags, color }) => {
 
 export const apiDeleteNote = async (id) => {
   await apiFetch(`/notes/${id}`, { method: 'DELETE' })
+}
+
+export const apiSetNotePinned = async (id, pinned) => {
+  const { data } = await apiFetch(`/notes/${id}/pin`, {
+    method: 'PATCH',
+    body: JSON.stringify({ pinned }),
+  })
+  return data  // NoteResponse
 }
 
 export const apiSummarizeNote = async (id) => {

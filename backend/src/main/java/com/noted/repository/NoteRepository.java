@@ -14,5 +14,10 @@ public interface NoteRepository extends JpaRepository<Note, String> {
     // the string gives oldest-first, matching the old JSON array order.
     List<Note> findByUserOrderByCreatedAtAsc(User user);
 
+    // Pinned notes first (pinned DESC puts true before false), then oldest
+    // first within each group — matches how the frontend re-sorts anyway,
+    // but keeping it consistent server-side too.
+    List<Note> findByUserOrderByPinnedDescCreatedAtAsc(User user);
+
     Optional<Note> findByIdAndUser(String id, User user);
 }

@@ -103,6 +103,11 @@
   outline-offset: 2px;
 }
 
+.note-card-pinned {
+  border-color: rgba(186, 255, 41, 0.35) !important;
+  background: linear-gradient(145deg, rgba(35, 45, 30, 0.92), rgba(20, 28, 22, 0.95));
+}
+
 /* Signature element: a colored "spine" per note, deterministically derived
    from the title, so the dashboard reads like a shelf of book spines. */
 .note-spine {

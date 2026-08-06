@@ -2,6 +2,7 @@ package com.noted.controller;
 
 import com.noted.dto.NoteAskRequest;
 import com.noted.dto.NoteAskResponse;
+import com.noted.dto.NotePinRequest;
 import com.noted.dto.NoteRequest;
 import com.noted.dto.NoteResponse;
 import com.noted.dto.NoteSummaryResponse;
@@ -58,6 +59,14 @@ public class NoteController {
             @PathVariable String id) {
         noteService.deleteNote(userEmail, id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/pin")
+    public ResponseEntity<NoteResponse> setPinned(
+            @RequestHeader(value = USER_HEADER, required = false) String userEmail,
+            @PathVariable String id,
+            @Valid @RequestBody NotePinRequest request) {
+        return ResponseEntity.ok(noteService.setPinned(userEmail, id, request.getPinned()));
     }
 
     @GetMapping("/{id}/summarize")

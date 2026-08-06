@@ -45,6 +45,9 @@ public class Note {
 
     private String color;
 
+    @Column(nullable = false)
+    private boolean pinned = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -129,5 +132,13 @@ public class Note {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
     }
 }

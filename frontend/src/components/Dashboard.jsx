@@ -21,17 +21,21 @@ import SearchRounded from '@mui/icons-material/SearchRounded'
 import NoteCard from './NoteCard'
 import { pluralize } from '../lib/noted'
 
-function Dashboard({ user, notes, onLogout, onAdd, onOpenNote, onEditNote, onDeleteNote }) {
+function Dashboard({ user, notes, onLogout, onAdd, onOpenNote, onEditNote, onDeleteNote, onTogglePin }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTag, setSelectedTag] = useState('all')
 
   const sortedNotes = useMemo(
     () =>
-      [...notes].sort(
-        (a, b) =>
+      [...notes].sort((a, b) => {
+        if (Boolean(b.pinned) !== Boolean(a.pinned)) {
+          return Boolean(b.pinned) - Boolean(a.pinned)
+        }
+        return (
           new Date(b.updatedAt || b.createdAt).getTime() -
-          new Date(a.updatedAt || a.createdAt).getTime(),
-      ),
+          new Date(a.updatedAt || a.createdAt).getTime()
+        )
+      }),
     [notes],
   )
 
@@ -174,6 +178,7 @@ function Dashboard({ user, notes, onLogout, onAdd, onOpenNote, onEditNote, onDel
                 onOpen={onOpenNote}
                 onEdit={onEditNote}
                 onDelete={onDeleteNote}
+                onTogglePin={onTogglePin}
               />
             ))
           )}

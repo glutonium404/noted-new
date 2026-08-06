@@ -67,7 +67,7 @@ public class NoteService {
 
     public List<NoteResponse> getNotes(String userEmail) {
         User user = currentUser(userEmail);
-        return noteRepository.findByUserOrderByCreatedAtAsc(user).stream().map(NoteResponse::from).toList();
+        return noteRepository.findByUserOrderByPinnedDescCreatedAtAsc(user).stream().map(NoteResponse::from).toList();
     }
 
     public NoteResponse createNote(String userEmail, NoteRequest request) {
@@ -114,6 +114,14 @@ public class NoteService {
         User user = currentUser(userEmail);
         Note note = findNote(user, noteId);
         noteRepository.delete(note);
+    }
+
+    public NoteResponse setPinned(String userEmail, String noteId, boolean pinned) {
+        User user = currentUser(userEmail);
+        Note note = findNote(user, noteId);
+        note.setPinned(pinned);
+        noteRepository.save(note);
+        return NoteResponse.from(note);
     }
 
     public NoteSummaryResponse summarizeNote(String userEmail, String noteId) {
