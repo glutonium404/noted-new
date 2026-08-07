@@ -55,8 +55,11 @@ export const resolveNoteColor = (note) => {
 // It resets on every page refresh — refreshing logs you out, on purpose,
 // since there's no persisted session.
 
-// const API_BASE = 'https://noted-new.onrender.com/api'
-const API_BASE = 'http://localhost:8080/api'
+// Automatically switches based on environment (development vs production)
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://noted-new.onrender.com/api'
+
+console.log(import.meta.env.VITE_API_BASE)
+
 let _userEmail = null
 
 export const setApiUser = (email) => {

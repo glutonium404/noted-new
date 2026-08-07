@@ -6,6 +6,9 @@ frontend/*.local
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
+.env
+.env.*
+!.env.example
 
 # ── Backend (Maven/Java) ──────────────────────────────────────────────
 backend/target/
