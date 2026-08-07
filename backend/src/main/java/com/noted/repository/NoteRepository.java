@@ -20,4 +20,10 @@ public interface NoteRepository extends JpaRepository<Note, String> {
     List<Note> findByUserOrderByPinnedDescCreatedAtAsc(User user);
 
     Optional<Note> findByIdAndUser(String id, User user);
+
+    // Used by the public share endpoint — deliberately not scoped to a user,
+    // since anyone with the link is allowed to look the note up.
+    Optional<Note> findByShareId(String shareId);
+
+    boolean existsByShareId(String shareId);
 }

@@ -15,11 +15,15 @@ public class NoteResponse {
     private List<String> tags;
     private String color;
     private boolean pinned;
+    // Null when the note isn't shared. Non-null means it's publicly viewable
+    // (read-only, no login required) at /api/notes/shared/{shareId} — the
+    // frontend can build the share link directly from this value.
+    private String shareId;
 
     public NoteResponse() {
     }
 
-    public NoteResponse(String id, String title, String body, String createdAt, String updatedAt, List<String> tags, String color, boolean pinned) {
+    public NoteResponse(String id, String title, String body, String createdAt, String updatedAt, List<String> tags, String color, boolean pinned, String shareId) {
         this.id = id;
         this.title = title;
         this.body = body;
@@ -28,6 +32,7 @@ public class NoteResponse {
         this.tags = tags;
         this.color = color;
         this.pinned = pinned;
+        this.shareId = shareId;
     }
 
     public static NoteResponse from(Note note) {
@@ -43,7 +48,8 @@ public class NoteResponse {
             note.getUpdatedAt(),
             safeTags,
             note.getColor(),
-            note.isPinned());
+            note.isPinned(),
+            note.getShareId());
     }
 
     public String getId() {
@@ -108,5 +114,13 @@ public class NoteResponse {
 
     public void setPinned(boolean pinned) {
         this.pinned = pinned;
+    }
+
+    public String getShareId() {
+        return shareId;
+    }
+
+    public void setShareId(String shareId) {
+        this.shareId = shareId;
     }
 }

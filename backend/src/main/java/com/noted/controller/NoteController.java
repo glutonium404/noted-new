@@ -6,6 +6,7 @@ import com.noted.dto.NotePinRequest;
 import com.noted.dto.NoteRequest;
 import com.noted.dto.NoteResponse;
 import com.noted.dto.NoteSummaryResponse;
+import com.noted.dto.SharedNoteResponse;
 import com.noted.service.NoteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -83,5 +84,30 @@ public class NoteController {
             @PathVariable String id,
             @Valid @RequestBody NoteAskRequest request) {
         return ResponseEntity.ok(noteService.askAiAboutNote(userEmail, id, request.getQuestion()));
+    }
+
+    // Owner-only: turns sharing on and returns the note (now carrying a
+    // shareId) so the frontend can build the public URL, e.g.
+    // `${origin}/share/${note.shareId}`.
+    @PostMapping("/{id}/share")
+    public ResponseEntity<NoteResponse> shareNote(
+            @RequestHeader(value = USER_HEADER, required = false) String userEmail,
+            @PathVariable String id) {
+        return ResponseEntity.ok(noteService.shareNote(userEmail, id));
+    }
+
+    // Owner-only: turns sharing off; the previous link stops resolving.
+    @DeleteMapping("/{id}/share")
+    public ResponseEntity<NoteResponse> unshareNote(
+            @RequestHeader(value = USER_HEADER, required = false) String userEmail,
+            @PathVariable String id) {
+        return ResponseEntity.ok(noteService.unshareNote(userEmail, id));
+    }
+
+    // Public — no X-User-Email header required/checked. Anyone with the
+    // shareId can view the note read-only. 404s once sharing is turned off.
+    @GetMapping("/shared/{shareId}")
+    public ResponseEntity<SharedNoteResponse> getSharedNote(@PathVariable String shareId) {
+        return ResponseEntity.ok(noteService.getSharedNote(shareId));
     }
 }

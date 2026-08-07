@@ -9,7 +9,7 @@ const theme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#baff29',
+      main: '#5bfca1',
       contrastText: '#0a0f0d',
     },
     error: {

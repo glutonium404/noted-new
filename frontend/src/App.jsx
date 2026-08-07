@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard'
 import NoteEditorDialog from './components/NoteEditorDialog'
 import NoteViewDialog from './components/NoteViewDialog'
 import ConfirmDeleteDialog from './components/ConfirmDeleteDialog'
+import SharedNoteView from './components/SharedNoteView' // ADDED IMPORT
 import {
   PASSWORD_MIN_LENGTH,
   sanitizeUsername,
@@ -21,6 +22,16 @@ import {
 import './App.css'
 
 function App() {
+  // --- ADDED NATIVE ROUTING CHECK ---
+  const path = window.location.pathname;
+  if (path.startsWith('/share/')) {
+    const shareId = path.split('/share/')[1];
+    if (shareId) {
+      return <SharedNoteView shareId={shareId} />;
+    }
+  }
+  // ----------------------------------
+
   const [currentUser, setCurrentUser] = useState(null)
   const [notes, setNotes] = useState([])
 

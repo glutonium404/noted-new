@@ -4,6 +4,7 @@ import com.noted.dto.NoteRequest;
 import com.noted.dto.NoteResponse;
 import com.noted.dto.NoteAskResponse;
 import com.noted.dto.NoteSummaryResponse;
+import com.noted.dto.SharedNoteResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noted.exception.ApiException;
@@ -171,6 +172,60 @@ public class NoteService {
             %s
             """.formatted(note.getTitle(), note.getBody(), question.trim());
         return new NoteAskResponse(callGemini(prompt));
+    }
+
+    // Turns sharing on for a note the user owns. Idempotent — calling it
+    // again while already shared just returns the existing link instead of
+    // rotating it, so a link someone already handed out doesn't silently break.
+    public NoteResponse shareNote(String userEmail, String noteId) {
+        User user = currentUser(userEmail);
+        Note note = findNote(user, noteId);
+        if (note.getShareId() == null || note.getShareId().isBlank()) {
+            note.setShareId(generateUniqueShareId());
+            noteRepository.save(note);
+        }
+        return NoteResponse.from(note);
+    }
+
+    // Turns sharing off. The old link stops working immediately (a later
+    // share click generates a brand new token, not the old one).
+    public NoteResponse unshareNote(String userEmail, String noteId) {
+        User user = currentUser(userEmail);
+        Note note = findNote(user, noteId);
+        note.setShareId(null);
+        noteRepository.save(note);
+        return NoteResponse.from(note);
+    }
+
+    // Public lookup — intentionally does NOT go through currentUser/findNote,
+    // since anyone with the link (logged in or not) is meant to be able to
+    // view the note. Only reachable if the note currently has sharing on.
+    public SharedNoteResponse getSharedNote(String shareId) {
+        if (shareId == null || shareId.isBlank()) {
+            throw new ApiException(HttpStatus.NOT_FOUND, "note_not_found", "Shared note not found.");
+        }
+        Note note = noteRepository.findByShareId(shareId.trim())
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "note_not_found", "Shared note not found."));
+        return SharedNoteResponse.from(note);
+    }
+
+    private static final String SHARE_ID_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    private String generateUniqueShareId() {
+        String candidate;
+        do {
+            candidate = randomShareToken(10);
+        } while (noteRepository.existsByShareId(candidate));
+        return candidate;
+    }
+
+    private String randomShareToken(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            int idx = ThreadLocalRandom.current().nextInt(SHARE_ID_ALPHABET.length());
+            sb.append(SHARE_ID_ALPHABET.charAt(idx));
+        }
+        return sb.toString();
     }
 
     private Note findNote(User user, String noteId) {

@@ -55,8 +55,8 @@ export const resolveNoteColor = (note) => {
 // It resets on every page refresh — refreshing logs you out, on purpose,
 // since there's no persisted session.
 
-const API_BASE = 'https://noted-new.onrender.com/api'
-// const API_BASE = 'http://localhost:8080/api'
+// const API_BASE = 'https://noted-new.onrender.com/api'
+const API_BASE = 'http://localhost:8080/api'
 let _userEmail = null
 
 export const setApiUser = (email) => {
@@ -163,3 +163,27 @@ export const apiAskAiAboutNote = async (id, question) => {
   })
   return data
 }
+
+// POST request to share a note
+export const shareNote = async (id) => {
+  const { data } = await apiFetch(`/notes/${id}/share`, {
+    method: 'POST',
+  });
+  return data; 
+};
+
+// DELETE request to unshare a note
+export const unshareNote = async (id) => {
+  const { data } = await apiFetch(`/notes/${id}/share`, {
+    method: 'DELETE',
+  });
+  return data;
+};
+
+// GET request for a public shared note (No Auth headers needed)
+export const getSharedNote = async (shareId) => {
+  // Using raw fetch instead of apiFetch to ensure X-User-Email is NOT sent
+  const response = await fetch(`${API_BASE}/notes/shared/${shareId}`);
+  if (!response.ok) throw new Error('note_not_found');
+  return response.json();
+};

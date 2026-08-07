@@ -11,6 +11,9 @@ import {
   Typography,
   Tooltip,
   Box,
+  Switch,
+  FormControlLabel,
+  Divider
 } from '@mui/material'
 import CloseRounded from '@mui/icons-material/CloseRounded'
 import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
@@ -31,6 +34,8 @@ import {
   resolveNoteColor,
   apiSummarizeNote,
   apiAskAiAboutNote,
+  shareNote,
+  unshareNote
 } from '../lib/noted'
 import { useEffect, useRef, useState } from 'react'
 
@@ -62,6 +67,9 @@ function NoteViewDialog({ note, onClose, onEdit, onDelete, onTogglePin }) {
   const [askAnswer, setAskAnswer] = useState('')
   const [askLoading, setAskLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [shareCopied, setShareCopied] = useState(false)
+  const [isSharing, setIsSharing] = useState(!!note?.shareId);
+  const [shareUrl, setShareUrl] = useState(note?.shareId ? `${window.location.origin}/share/${note.shareId}` : '');
   const bodyRef = useRef(null)
 
   useEffect(() => {
@@ -75,7 +83,10 @@ function NoteViewDialog({ note, onClose, onEdit, onDelete, onTogglePin }) {
     setAskAnswer('')
     setAskLoading(false)
     setCopied(false)
-  }, [note?.id])
+    setShareCopied(false)
+    setIsSharing(!!note?.shareId)
+    setShareUrl(note?.shareId ? `${window.location.origin}/share/${note.shareId}` : '')
+  }, [note?.id, note?.shareId])
 
   const handleSummarize = async () => {
     if (!note) return
@@ -90,6 +101,7 @@ function NoteViewDialog({ note, onClose, onEdit, onDelete, onTogglePin }) {
 
     setSummaryLoading(true)
     setSummaryError('')
+
     try {
       const data = await apiSummarizeNote(note.id)
       setSummary(data)
@@ -162,6 +174,28 @@ function NoteViewDialog({ note, onClose, onEdit, onDelete, onTogglePin }) {
     }
   }
 
+  const handleCopyShareUrl = async () => {
+    if (!shareUrl) return
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl)
+      } else {
+        const textarea = document.createElement('textarea')
+        textarea.value = shareUrl
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+      }
+      setShareCopied(true)
+      setTimeout(() => setShareCopied(false), 1800)
+    } catch {
+      // Silently ignore
+    }
+  }
+
   const escapeHtml = (value) =>
     String(value ?? '')
       .replace(/&/g, '&amp;')
@@ -173,9 +207,6 @@ function NoteViewDialog({ note, onClose, onEdit, onDelete, onTogglePin }) {
     if (!note) return
 
     const bodyHtml = bodyRef.current?.innerHTML ?? `<p>${escapeHtml(note.body)}</p>`
-    const tagsHtml = (note.tags ?? [])
-      .map((tag) => `<span class="note-print-tag">#${escapeHtml(tag)}</span>`)
-      .join(' ')
 
     const iframe = document.createElement('iframe')
     iframe.style.position = 'fixed'
@@ -238,17 +269,38 @@ function NoteViewDialog({ note, onClose, onEdit, onDelete, onTogglePin }) {
     }, 250)
   }
 
+  const handleToggleShare = async (e) => {
+    const checked = e.target.checked;
+    try {
+      if (checked) {
+        const updatedNote = await shareNote(note.id);
+
+        if (note) note.shareId = updatedNote.shareId; 
+
+        const url = `${window.location.origin}/share/${updatedNote.shareId}`;
+        setShareUrl(url);
+        setIsSharing(true);
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(url);
+        }
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 1800);
+      } else {
+        await unshareNote(note.id);
+
+        if (note) delete note.shareId;
+
+        setShareUrl('');
+        setIsSharing(false);
+        setShareCopied(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <Dialog
-      open={Boolean(note)}
-      onClose={onClose}
-      fullWidth maxWidth="sm"
-      sx={{
-        '& .MuiDialog-paper': {
-          maxWidth: { md: '840px' },
-        },
-      }}
-    >
+    <Dialog open={Boolean(note)} onClose={onClose} fullWidth maxWidth="sm" sx={{ '& .MuiDialog-paper': { maxWidth: { md: '840px' }, }, }} >
       {note && (
         <>
           <DialogTitle sx={{ pr: 1 }}>
@@ -371,6 +423,42 @@ function NoteViewDialog({ note, onClose, onEdit, onDelete, onTogglePin }) {
               Delete
             </Button>
           </DialogActions>
+          <Divider sx={{ my: 2 }} />
+          <Box sx={{ paddingInline: 4, pb: 3 }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isSharing}
+                  onChange={handleToggleShare}
+                  color="primary"
+                />
+              }
+              label="Enable Public Sharing"
+            />
+
+            {isSharing && (
+              <Box sx={{ display: 'flex', gap: 1, mt: 1, alignItems: 'center' }}>
+                <TextField
+                  size="small"
+                  fullWidth
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  value={shareUrl}
+                  variant="outlined"
+                />
+                <Button
+                  variant="contained"
+                  startIcon={shareCopied ? <DoneRounded /> : <ContentCopyRounded />}
+                  color={shareCopied ? 'success' : 'primary'}
+                  onClick={handleCopyShareUrl}
+                  sx={{ whiteSpace: 'nowrap' }}
+                >
+                  {shareCopied ? 'Copied!' : 'Copy Link'}
+                </Button>
+              </Box>
+            )}
+          </Box>
         </>
       )}
 

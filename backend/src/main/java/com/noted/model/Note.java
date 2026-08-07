@@ -48,6 +48,12 @@ public class Note {
     @Column(nullable = false)
     private boolean pinned = false;
 
+    // Null when the note is not shared. Set to a random public token when
+    // the owner turns sharing on; anyone with this token can view the note
+    // read-only via GET /api/notes/shared/{shareId} without logging in.
+    @Column(name = "share_id", unique = true)
+    private String shareId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -140,5 +146,13 @@ public class Note {
 
     public void setPinned(boolean pinned) {
         this.pinned = pinned;
+    }
+
+    public String getShareId() {
+        return shareId;
+    }
+
+    public void setShareId(String shareId) {
+        this.shareId = shareId;
     }
 }
